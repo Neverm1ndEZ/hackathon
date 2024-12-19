@@ -8,6 +8,8 @@ import { User } from "../models/User.js";
 export class UserService {
 	constructor(redis) {
 		this.redis = redis;
+		// Flag to track if Redis caching is available
+		this.hasCaching = Boolean(redis);
 	}
 
 	async registerUser(userData) {
@@ -27,8 +29,12 @@ export class UserService {
 		// Generate authentication token
 		const token = this.generateAuthToken(user);
 
-		// Cache user data
-		await this.cacheUserData(user);
+		// Try to cache user data, but don't let caching failures affect registration
+		try {
+			await this.cacheUserData(user);
+		} catch (error) {
+			console.warn("Failed to cache user data:", error.message);
+		}
 
 		return {
 			user: this.sanitizeUser(user),
@@ -130,12 +136,22 @@ export class UserService {
 	}
 
 	async cacheUserData(user) {
+		// Skip caching if Redis isn't available
+		if (!this.hasCaching) {
+			return;
+		}
+
 		const userData = this.sanitizeUser(user);
-		await this.redis.setex(
-			`user:${user._id}`,
-			APP_CONSTANTS.CACHE.DEFAULT_TTL,
-			JSON.stringify(userData),
-		);
+		try {
+			await this.redis.setex(
+				`user:${user._id}`,
+				APP_CONSTANTS.CACHE.DEFAULT_TTL,
+				JSON.stringify(userData),
+			);
+		} catch (error) {
+			// Log the error but don't let it break the application
+			console.warn("Redis caching failed:", error.message);
+		}
 	}
 
 	sanitizeUser(user) {

@@ -1,11 +1,26 @@
-// src/controllers/UserController.ts
-
 export class UserController {
-	constructor(userService) {}
+	constructor(userService) {
+		// Store the userService as a class property
+		this.userService = userService;
+
+		// Bind class methods to ensure correct 'this' context
+		this.registerUser = this.registerUser.bind(this);
+		this.authenticateUser = this.authenticateUser.bind(this);
+		this.updateUserSkills = this.updateUserSkills.bind(this);
+		this.findNearbySkills = this.findNearbySkills.bind(this);
+	}
 
 	// Register new user
-	registerUser = async (req, res, next) => {
+	async registerUser(req, res, next) {
 		try {
+			// If skills are provided as objects, extract just the names
+			if (req.body.skills) {
+				req.body.skills = req.body.skills.map((skill) =>
+					// Handle both string and object formats
+					typeof skill === "string" ? skill : skill.name,
+				);
+			}
+
 			const { user, token } = await this.userService.registerUser(req.body);
 
 			res.status(201).json({
@@ -15,10 +30,10 @@ export class UserController {
 		} catch (error) {
 			next(error);
 		}
-	};
+	}
 
 	// Authenticate user
-	authenticateUser = async (req, res, next) => {
+	async authenticateUser(req, res, next) {
 		try {
 			const { email, password } = req.body;
 			const { user, token } = await this.userService.authenticateUser(
@@ -33,10 +48,10 @@ export class UserController {
 		} catch (error) {
 			next(error);
 		}
-	};
+	}
 
 	// Update user skills
-	updateUserSkills = async (req, res, next) => {
+	async updateUserSkills(req, res, next) {
 		try {
 			const updatedUser = await this.userService.updateUserSkills(
 				req.user.id,
@@ -50,10 +65,10 @@ export class UserController {
 		} catch (error) {
 			next(error);
 		}
-	};
+	}
 
 	// Find users with specific skills
-	findNearbySkills = async (req, res, next) => {
+	async findNearbySkills(req, res, next) {
 		try {
 			const { latitude, longitude, skill, maxDistance } = req.query;
 
@@ -71,5 +86,5 @@ export class UserController {
 		} catch (error) {
 			next(error);
 		}
-	};
+	}
 }

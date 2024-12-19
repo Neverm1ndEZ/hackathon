@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-https://localhost:8000/api/v1
+localhost:8000/api/
 ```
 
 ## Authentication
@@ -43,6 +43,30 @@ Content-Type: application/json
   }
 }
 
+example : {
+    "username": "neverm1nd",
+    "name": "Mihir",
+    "email": "randommihir837@gmail.com",
+    "password": "M123456789",
+    "skills": [
+        {
+            "name": "paramedic",
+            "level": "BEGINNER"
+        },
+        {
+            "name": "first aid",
+            "level": "INTERMEDIATE"
+        }
+    ],
+    "location": {
+        "type": "Point",
+        "coordinates": [
+            12.98,
+            77.76
+        ]
+    }
+}
+
 Response 201:
 {
   "success": true,
@@ -69,6 +93,11 @@ Content-Type: application/json
   "password": "string"
 }
 
+example: {
+  "email": "randommihir837@gmail.com",
+  "password": "M123456789"
+}
+
 Response 200:
 {
   "success": true,
@@ -76,6 +105,42 @@ Response 200:
     "user": {...},
     "token": "string"
   }
+}
+
+example: 
+
+{
+    "success": true,
+    "data": {
+        "user": {
+            "location": {
+                "type": "Point",
+                "coordinates": [
+                    12.98,
+                    77.76
+                ]
+            },
+            "preferences": {
+                "notifications": true,
+                "radius": 5000
+            },
+            "_id": "6763f955af680662401e79e1",
+            "username": "neverm1nd",
+            "email": "randommihir837@gmail.com",
+            "name": "Mihir",
+            "skills": [
+                "paramedic",
+                "first aid"
+            ],
+            "status": "ACTIVE",
+            "role": "USER",
+            "lastActive": "2024-12-19T10:53:01.310Z",
+            "createdAt": "2024-12-19T10:45:41.732Z",
+            "updatedAt": "2024-12-19T10:53:01.313Z",
+            "__v": 0
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzYzZjk1NWFmNjgwNjYyNDAxZTc5ZTEiLCJpYXQiOjE3MzQ2MDU1ODEsImV4cCI6MTczNDY5MTk4MX0.HOoteKZFFBy1yJpMYiHJiQYD4mDimqA2JGh1lN2HJO4"
+    }
 }
 ```
 

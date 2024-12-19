@@ -7,7 +7,7 @@ import { validate } from "../../middleware/validation.js";
 import { rateLimiter } from "../../middleware/rateLimiter.js";
 
 const router = Router();
-const userService = new UserService(/* inject Redis client */);
+const userService = new UserService(null);
 const userController = new UserController(userService);
 
 router.post(

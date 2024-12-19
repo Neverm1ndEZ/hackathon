@@ -2,14 +2,22 @@
 import { ResourceService } from "../services/ResourceService.js";
 
 export class ResourceController {
-	constructor(resourceService) {}
+	constructor(resourceService) {
+		// Store the resourceService as a class property
+		this.resourceService = resourceService;
+
+		// Bind class methods to ensure correct 'this' context
+		this.createResource = this.createResource.bind(this);
+		this.findNearbyResources = this.findNearbyResources.bind(this);
+		this.updateResourceStatus = this.updateResourceStatus.bind(this);
+	}
 
 	// Create new resource
-	createResource = async (req, res, next) => {
+	async createResource(req, res, next) {
 		try {
 			const resource = await this.resourceService.createResource({
 				...req.body,
-				updatedBy: req.user.id, // From auth middleware
+				updatedBy: req.user?.id, // Made optional with ?. operator
 			});
 
 			res.status(201).json({
@@ -19,7 +27,7 @@ export class ResourceController {
 		} catch (error) {
 			next(error);
 		}
-	};
+	}
 
 	// Find nearby resources
 	findNearbyResources = async (req, res, next) => {

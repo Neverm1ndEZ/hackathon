@@ -209,12 +209,54 @@ Content-Type: application/json
   "contactInfo": "string"
 }
 
+EXAMPLE: 
+{
+  "name": "Mihir",
+  "type": "WATER",
+  "quantity": 100,
+  "location": {
+    "type": "Point",
+    "coordinates": [12.96, 77.78]
+  },
+  "status": "AVAILABLE",
+  "description": "I've water",
+  "expiryDate": "2025-12-19",
+  "contactInfo": "9631083004"
+}
+
 Response 201:
 {
   "success": true,
   "data": {
     "resource": {...}
   }
+}
+
+EXAMPLE: 
+{
+    "success": true,
+    "data": {
+        "name": "Mihir",
+        "type": "WATER",
+        "quantity": 100,
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                12.96,
+                77.78
+            ]
+        },
+        "status": "AVAILABLE",
+        "updatedBy": "6763f955af680662401e79e1",
+        "description": "I've water",
+        "expiryDate": "2025-12-19T00:00:00.000Z",
+        "contactInfo": "9631083004",
+        "_id": "6763ff466a83c11e5ee2c2ce",
+        "lastUpdated": "2024-12-19T11:11:02.371Z",
+        "createdAt": "2024-12-19T11:11:02.371Z",
+        "updatedAt": "2024-12-19T11:11:02.371Z",
+        "__v": 0
+    }
 }
 ```
 

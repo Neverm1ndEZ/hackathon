@@ -4,6 +4,9 @@ import { EmergencyAlert } from "../models/EmergencyAlert.js";
 
 export class AlertService {
 	constructor(meshNetwork, io) {
+		if (!io) {
+			throw new Error("Socket.IO instance is required");
+		}
 		this.meshNetwork = meshNetwork;
 		this.io = io;
 	}
@@ -21,38 +24,56 @@ export class AlertService {
 
 	// Broadcast alert to online and offline users
 	async broadcastAlert(alert) {
-		// Find users within alert radius (5km)
-		const nearbyUsers = await User.find({
-			location: {
-				$near: {
-					$geometry: alert.location,
-					$maxDistance: 5000, // 5km radius
+		try {
+			// Find users within alert radius (5km)
+			const nearbyUsers = await User.find({
+				location: {
+					$near: {
+						$geometry: alert.location,
+						$maxDistance: 5000, // 5km radius
+					},
 				},
-			},
-		}).select("_id");
+			}).select("_id");
 
-		// Prepare alert data to broadcast
-		const alertData = {
-			id: alert._id,
-			type: alert.type,
-			priority: alert.priority,
-			location: alert.location,
-			description: alert.description,
-		};
+			// Prepare alert data
+			const alertData = {
+				id: alert._id,
+				type: alert.type,
+				priority: alert.priority,
+				location: alert.location,
+				description: alert.description,
+				timestamp: new Date(),
+			};
 
-		// Emit alert to online users
-		this.io
-			.to(nearbyUsers.map((user) => user._id.toString()))
-			.emit("emergency:alert", alertData);
+			// Broadcast to all connected clients in range
+			const userRooms = nearbyUsers.map((user) => user._id.toString());
 
-		// Broadcast through mesh network for offline users
-		this.meshNetwork.broadcastMessage(
-			{
-				type: "EMERGENCY_ALERT",
-				data: alertData,
-			},
-			alert.createdBy.toString(),
-		);
+			// Broadcast to each user individually if multiple rooms aren't working
+			for (const roomId of userRooms) {
+				this.io.to(roomId).emit("emergency:alert", alertData);
+			}
+
+			// Also broadcast to a general emergency channel
+			this.io.emit("emergency:broadcast", alertData);
+
+			// Broadcast through mesh network for offline users
+			if (this.meshNetwork) {
+				this.meshNetwork.broadcastMessage(
+					{
+						type: "EMERGENCY_ALERT",
+						data: alertData,
+					},
+					alert.createdBy?.toString(),
+				);
+			}
+
+			console.log(`Alert broadcasted to ${userRooms.length} users`);
+			return true;
+		} catch (error) {
+			console.error("Error broadcasting alert:", error);
+			// Don't throw the error - we want the alert to be saved even if broadcasting fails
+			return false;
+		}
 	}
 
 	// Respond to alert

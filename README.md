@@ -144,49 +144,6 @@ example:
 }
 ```
 
-### Update User Skills
-```http
-PUT /users/skills
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "skills": [
-    {
-      "name": "string",
-      "level": "BEGINNER" | "INTERMEDIATE" | "EXPERT"
-    }
-  ]
-}
-
-Response 200:
-{
-  "success": true,
-  "data": {
-    "user": {...}
-  }
-}
-```
-
-### Find Nearby Skills
-```http
-GET /users/skills/nearby?latitude=<number>&longitude=<number>&skill=<string>&maxDistance=<number>
-Authorization: Bearer <token>
-
-Response 200:
-{
-  "success": true,
-  "data": [
-    {
-      "username": "string",
-      "skills": [...],
-      "location": {...},
-      "distance": number
-    }
-  ]
-}
-```
-
 ## Resource Management
 
 ### Create Resource
@@ -259,7 +216,7 @@ EXAMPLE:
     }
 }
 ```
-
+<!-- 
 ### Find Nearby Resources
 ```http
 GET /resources/nearby?latitude=<number>&longitude=<number>&type=<string>&maxDistance=<number>
@@ -279,7 +236,7 @@ Response 200:
     }
   ]
 }
-```
+``` -->
 
 ### Update Resource Status
 ```http

@@ -2,12 +2,16 @@
 
 export const setupSocketIO = (io) => {
 	io.on("connection", (socket) => {
-		console.log(`Client connected: ${socket.id}`);
+		console.log("Client connected:", socket.id);
 
-		socket.on("disconnect", () => {
-			console.log(`Client disconnected: ${socket.id}`);
+		// Handle user authentication and room joining
+		socket.on("join", (userId) => {
+			socket.join(userId);
+			console.log(`User ${userId} joined their room`);
 		});
 
-		// Add your custom socket events here
+		socket.on("disconnect", () => {
+			console.log("Client disconnected:", socket.id);
+		});
 	});
 };
